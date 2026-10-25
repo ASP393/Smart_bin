@@ -1,0 +1,476 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/humans/pedestrian/protos/Pedestrian.proto"
+
+WorldInfo {
+  basicTimeStep 16
+  contactProperties [
+    ContactProperties {
+      material1 "trash"
+      material2 "default"
+      coulombFriction [ 0.75 ]
+      bounce 0.22
+      bounceVelocity 0.05
+      softCFM 0.0008
+      softERP 0.4
+    }
+    ContactProperties {
+      material1 "trash"
+      material2 "trash"
+      coulombFriction [ 0.75 ]
+      bounce 0.20
+      bounceVelocity 0.05
+    }
+  ]
+}
+Viewpoint {
+  orientation -0.14 0.37 0.92 0.78
+  position -11.73 -10.84 5.31
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 8 8
+  floorAppearance PBRAppearance {
+    baseColor 0.88 0.89 0.92
+    roughness 0.35
+    metalness 0.02
+  }
+  wallHeight 0.12
+  wallThickness 0.02
+  wallAppearance PBRAppearance {
+    baseColor 0.2 0.22 0.25
+    roughness 0.4
+    metalness 0.3
+  }
+}
+# ===== REALISTIC PERSON (throws trash) =====
+DEF PERSON Pedestrian {
+  translation -2.7 0 1.27
+  rotation 0 0 1 0
+  name "person"
+  controller "<none>"
+  shirtColor 0.2 0.4 0.75
+  pantsColor 0.15 0.18 0.25
+  shoesColor 0.18 0.12 0.08
+}
+# ===== SMART BIN (wheels + chassis + camera + rangefinder) =====
+DEF BIN Robot {
+  translation 0 0 0.36
+  rotation 0 0 1 0
+  children [
+    # --- 4 Omni-wheels ---
+    Pose {
+      translation 0.2 0.2 -0.33
+      rotation 1 0 0 1.5708
+      children [
+        Shape {
+          appearance DEF WHEEL_MAT PBRAppearance {
+            baseColor 0.12 0.12 0.12
+            roughness 0.4
+            metalness 0.5
+          }
+          geometry Cylinder {
+            radius 0.03
+            height 0.04
+          }
+        }
+      ]
+    }
+    Pose {
+      translation -0.2 0.2 -0.33
+      rotation 1 0 0 1.5708
+      children [
+        Shape {
+          appearance USE WHEEL_MAT
+          geometry Cylinder {
+            radius 0.03
+            height 0.04
+          }
+        }
+      ]
+    }
+    Pose {
+      translation 0.2 -0.2 -0.33
+      rotation 1 0 0 1.5708
+      children [
+        Shape {
+          appearance USE WHEEL_MAT
+          geometry Cylinder {
+            radius 0.03
+            height 0.04
+          }
+        }
+      ]
+    }
+    Pose {
+      translation -0.2 -0.2 -0.33
+      rotation 1 0 0 1.5708
+      children [
+        Shape {
+          appearance USE WHEEL_MAT
+          geometry Cylinder {
+            radius 0.03
+            height 0.04
+          }
+        }
+      ]
+    }
+    # --- Chassis plate ---
+    Pose {
+      translation 0 0 -0.305
+      children [
+        Shape {
+          appearance DEF CHASSIS_MAT PBRAppearance {
+            baseColor 0.25 0.25 0.28
+            roughness 0.6
+            metalness 0.3
+          }
+          geometry Box {
+            size 0.48 0.48 0.02
+          }
+        }
+      ]
+    }
+    # --- Bin base ---
+    Pose {
+      translation 0 0 -0.285
+      children [
+        Shape {
+          appearance DEF BIN_COLOR PBRAppearance {
+            baseColor 0.1 0.4 0.9
+            roughness 1
+            metalness 0
+          }
+          geometry Box {
+            size 0.56 0.56 0.03
+          }
+        }
+      ]
+    }
+    # --- Wall +X ---
+    Pose {
+      translation 0.265 0 0.015
+      children [
+        Shape {
+          appearance USE BIN_COLOR
+          geometry Box {
+            size 0.03 0.56 0.57
+          }
+        }
+      ]
+    }
+    # --- Wall -X ---
+    Pose {
+      translation -0.265 0 0.015
+      children [
+        Shape {
+          appearance USE BIN_COLOR
+          geometry Box {
+            size 0.03 0.56 0.57
+          }
+        }
+      ]
+    }
+    # --- Wall +Y ---
+    Pose {
+      translation 0 0.265 0.015
+      children [
+        Shape {
+          appearance USE BIN_COLOR
+          geometry Box {
+            size 0.5 0.03 0.57
+          }
+        }
+      ]
+    }
+    # --- Wall -Y ---
+    Pose {
+      translation 0 -0.265 0.015
+      children [
+        Shape {
+          appearance USE BIN_COLOR
+          geometry Box {
+            size 0.5 0.03 0.57
+          }
+        }
+      ]
+    }
+    # --- High-Tech Depth Sensing Camera & Mount (Intel RealSense / OAK-D Style) ---
+    # 1. Vertical mounting mast
+    Pose {
+      translation 0 0.24 0.36
+      rotation 1 0 0 1.5708
+      children [
+        Shape {
+          appearance DEF MAST_MAT PBRAppearance {
+            baseColor 0.15 0.15 0.16
+            roughness 0.35
+            metalness 0.7
+          }
+          geometry Cylinder {
+            radius 0.01
+            height 0.14
+          }
+        }
+      ]
+    }
+    # 2. Articulated mounting bracket
+    Pose {
+      translation 0 0.24 0.435
+      children [
+        Shape {
+          appearance DEF BRACKET_MAT PBRAppearance {
+            baseColor 0.25 0.25 0.28
+            roughness 0.3
+            metalness 0.8
+          }
+          geometry Box {
+            size 0.035 0.025 0.018
+          }
+        }
+      ]
+    }
+    # 3. Tilted Camera Unit (tilted 45 degrees towards thrower and sky)
+    Pose {
+      translation 0 0.24 0.45
+      rotation 0 1 0 -0.7854
+      children [
+        # Main Camera Housing (Matte Space Gray)
+        Pose {
+          translation 0 0 0
+          children [
+            Shape {
+              appearance DEF CAM_HOUSING PBRAppearance {
+                baseColor 0.18 0.2 0.23
+                roughness 0.3
+                metalness 0.7
+              }
+              geometry Box {
+                size 0.12 0.028 0.032
+              }
+            }
+          ]
+        }
+        # Front Glass Faceplate (Glossy Black Visor)
+        Pose {
+          translation 0 0 0.017
+          children [
+            Shape {
+              appearance DEF GLASS_VISOR PBRAppearance {
+                baseColor 0.03 0.03 0.04
+                roughness 0.05
+                metalness 0.95
+              }
+              geometry Box {
+                size 0.112 0.024 0.002
+              }
+            }
+          ]
+        }
+        # Left Lens: RGB Sensor Optical Glass
+        Pose {
+          translation -0.028 0 0.019
+          rotation 1 0 0 1.5708
+          children [
+            Shape {
+              appearance DEF LENS_GLASS PBRAppearance {
+                baseColor 0.02 0.02 0.08
+                emissiveColor 0.01 0.01 0.05
+                roughness 0.02
+                metalness 0.98
+              }
+              geometry Cylinder {
+                radius 0.008
+                height 0.003
+              }
+            }
+          ]
+        }
+        # Right Lens: Depth / Infrared Sensor Glass
+        Pose {
+          translation 0.028 0 0.019
+          rotation 1 0 0 1.5708
+          children [
+            Shape {
+              appearance DEF IR_GLASS PBRAppearance {
+                baseColor 0.08 0.02 0.02
+                emissiveColor 0.03 0.01 0.01
+                roughness 0.05
+                metalness 0.9
+              }
+              geometry Cylinder {
+                radius 0.007
+                height 0.003
+              }
+            }
+          ]
+        }
+        # Active Status Indicator (Glowing Cyan LED)
+        Pose {
+          translation 0 0 0.019
+          children [
+            Shape {
+              appearance DEF STATUS_LED PBRAppearance {
+                baseColor 0 0.8 1
+                emissiveColor 0 0.8 1
+                roughness 0.1
+              }
+              geometry Sphere {
+                radius 0.0025
+              }
+            }
+          ]
+        }
+        # Embedded Webots Camera Device (placed at front lens face)
+        Camera {
+          translation -0.028 0 0.026
+          rotation 0 0 1 0
+          name "camera"
+          fieldOfView 1.8
+          width 320
+          height 240
+          near 0.02
+        }
+        # Embedded Webots RangeFinder Device (placed at front lens face)
+        RangeFinder {
+          translation 0.028 0 0.026
+          rotation 0 0 1 0
+          name "range_finder"
+          fieldOfView 1.8
+          width 320
+          height 240
+          near 0.02
+          maxRange 10
+        }
+      ]
+    }
+  ]
+  name "bin"
+  boundingObject Group {
+    children [
+      Pose {
+        translation 0 0 -0.285
+        children [
+          Box {
+            size 0.56 0.56 0.03
+          }
+        ]
+      }
+      Pose {
+        translation 0.265 0 0.015
+        children [
+          Box {
+            size 0.03 0.56 0.57
+          }
+        ]
+      }
+      Pose {
+        translation -0.265 0 0.015
+        children [
+          Box {
+            size 0.03 0.56 0.57
+          }
+        ]
+      }
+      Pose {
+        translation 0 0.265 0.015
+        children [
+          Box {
+            size 0.5 0.03 0.57
+          }
+        ]
+      }
+      Pose {
+        translation 0 -0.265 0.015
+        children [
+          Box {
+            size 0.5 0.03 0.57
+          }
+        ]
+      }
+    ]
+  }
+  physics Physics {
+    density -1
+    mass 5
+  }
+  controller "bin_controller"
+  supervisor TRUE
+}
+# ===== REALISTIC CRUMPLED PAPER TRASH (NON-BOUNCING) =====
+DEF TRASH Solid {
+  translation -2.5 0 1.35
+  rotation 0 0 1 0
+  children [
+    # 1. Main Crumpled Paper Ball Body (Multi-faceted 80-face crumpled paper mesh)
+    Shape {
+      appearance DEF CRUMPLED_PAPER PBRAppearance {
+        baseColor 0.88 0.22 0.15
+        roughness 0.95
+        metalness 0
+      }
+      geometry IndexedFaceSet {
+        coord Coordinate {
+          point [ -0.0273 0.0442 0.0000 0.0273 0.0442 0.0000 -0.0273 -0.0442 0.0000 0.0273 -0.0442 0.0000 0.0000 -0.0273 0.0442 0.0000 0.0273 0.0442 0.0000 -0.0273 -0.0442 0.0000 0.0273 -0.0442 0.0442 0.0000 -0.0273 0.0442 0.0000 0.0273 -0.0442 0.0000 -0.0273 -0.0442 0.0000 0.0273 -0.0398 0.0246 0.0152 -0.0207 0.0128 0.0335 -0.0166 0.0434 0.0268 0.0149 0.0390 0.0241 0.0000 0.0465 0.0000 0.0185 0.0485 -0.0300 -0.0181 0.0475 -0.0293 -0.0265 0.0164 -0.0429 -0.0333 0.0206 -0.0127 -0.0602 0.0000 0.0000 0.0286 0.0177 0.0463 0.0336 0.0208 0.0128 -0.0250 -0.0155 0.0405 0.0000 0.0000 0.0586 -0.0382 -0.0236 -0.0146 -0.0416 -0.0257 0.0159 0.0000 0.0000 -0.0434 -0.0254 -0.0157 -0.0410 0.0484 0.0299 -0.0185 0.0248 0.0153 -0.0401 0.0409 -0.0253 0.0156 0.0253 -0.0157 0.0410 0.0188 -0.0491 0.0303 -0.0133 -0.0349 0.0216 0.0000 -0.0587 0.0000 -0.0148 -0.0387 -0.0239 0.0184 -0.0482 -0.0298 0.0245 -0.0152 -0.0397 0.0341 -0.0211 -0.0130 0.0560 0.0000 0.0000 ]
+        }
+        coordIndex [ 0 12 14 -1 11 13 12 -1 5 14 13 -1 12 13 14 -1 0 14 16 -1 5 15 14 -1 1 16 15 -1 14 15 16 -1 0 16 18 -1 1 17 16 -1 7 18 17 -1 16 17 18 -1 0 18 20 -1 7 19 18 -1 10 20 19 -1 18 19 20 -1 0 20 12 -1 10 21 20 -1 11 12 21 -1 20 21 12 -1 1 15 23 -1 5 22 15 -1 9 23 22 -1 15 22 23 -1 5 13 25 -1 11 24 13 -1 4 25 24 -1 13 24 25 -1 11 21 27 -1 10 26 21 -1 2 27 26 -1 21 26 27 -1 10 19 29 -1 7 28 19 -1 6 29 28 -1 19 28 29 -1 7 17 31 -1 1 30 17 -1 8 31 30 -1 17 30 31 -1 3 32 34 -1 9 33 32 -1 4 34 33 -1 32 33 34 -1 3 34 36 -1 4 35 34 -1 2 36 35 -1 34 35 36 -1 3 36 38 -1 2 37 36 -1 6 38 37 -1 36 37 38 -1 3 38 40 -1 6 39 38 -1 8 40 39 -1 38 39 40 -1 3 40 32 -1 8 41 40 -1 9 32 41 -1 40 41 32 -1 4 33 25 -1 9 22 33 -1 5 25 22 -1 33 22 25 -1 2 35 27 -1 4 24 35 -1 11 27 24 -1 35 24 27 -1 6 37 29 -1 2 26 37 -1 10 29 26 -1 37 26 29 -1 8 39 31 -1 6 28 39 -1 7 31 28 -1 39 28 31 -1 9 41 23 -1 8 30 41 -1 1 23 30 -1 41 30 23 -1 ]
+        creaseAngle 0
+      }
+    }
+    # 2. Asymmetric crumpled paper flap 1
+    Pose {
+      translation 0.028 0.015 0.022
+      rotation 0.5 0.6 0.3 1.1
+      children [
+        Shape {
+          appearance USE CRUMPLED_PAPER
+          geometry Box {
+            size 0.038 0.032 0.012
+          }
+        }
+      ]
+    }
+    # 3. Asymmetric crumpled paper fold 2
+    Pose {
+      translation -0.022 -0.02 -0.018
+      rotation 0.2 0.8 0.5 1.4
+      children [
+        Shape {
+          appearance USE CRUMPLED_PAPER
+          geometry Box {
+            size 0.032 0.036 0.015
+          }
+        }
+      ]
+    }
+  ]
+  name "trash"
+  contactMaterial "trash"
+  boundingObject Pose {
+    children [
+      Sphere {
+        radius 0.048
+      }
+    ]
+  }
+  physics Physics {
+    density -1
+    mass 0.05
+    damping Damping {
+      linear 0.12
+      angular 0.20
+    }
+  }
+}
+# ===== THROWER SUPERVISOR =====
+Robot {
+  name "thrower"
+  controller "thrower"
+  supervisor TRUE
+}

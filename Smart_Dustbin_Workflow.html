@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Dustbin – Project Workflow</title>
+  <style>
+    @page { size: A4; margin: 18mm 16mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: #1e293b; background: #fff;
+      font-size: 11pt; line-height: 1.55;
+      padding: 0;
+    }
+
+    /* ---------- cover page ---------- */
+    .cover {
+      min-height: 100vh; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; text-align: center;
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0ea5e9 100%);
+      color: #fff; padding: 60px 40px;
+      page-break-after: always;
+    }
+    .cover h1 { font-size: 38pt; font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; }
+    .cover .subtitle { font-size: 16pt; opacity: .85; margin-bottom: 40px; font-weight: 300; }
+    .cover .meta { font-size: 11pt; opacity: .7; line-height: 2; }
+    .cover .icon { font-size: 72pt; margin-bottom: 30px; }
+
+    /* ---------- layout ---------- */
+    .page { padding: 10px 0; page-break-inside: avoid; }
+    section { margin-bottom: 28px; }
+    h2 {
+      font-size: 17pt; font-weight: 700; color: #0f172a;
+      border-bottom: 3px solid #0ea5e9; padding-bottom: 6px;
+      margin-bottom: 14px; margin-top: 30px;
+    }
+    h3 { font-size: 13pt; font-weight: 600; color: #1e40af; margin: 18px 0 8px; }
+    p, li { margin-bottom: 6px; }
+    ul, ol { padding-left: 22px; }
+
+    /* ---------- cards ---------- */
+    .card {
+      background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;
+      padding: 16px 20px; margin: 12px 0;
+    }
+    .card-blue { border-left: 4px solid #0ea5e9; }
+    .card-green { border-left: 4px solid #22c55e; }
+    .card-amber { border-left: 4px solid #f59e0b; }
+    .card-red { border-left: 4px solid #ef4444; }
+    .card h4 { font-size: 11.5pt; font-weight: 700; margin-bottom: 6px; }
+
+    /* ---------- tables ---------- */
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 10pt; }
+    th { background: #0f172a; color: #fff; text-align: left; padding: 8px 12px; font-weight: 600; }
+    td { padding: 7px 12px; border-bottom: 1px solid #e2e8f0; }
+    tr:nth-child(even) td { background: #f8fafc; }
+
+    /* ---------- diagram boxes ---------- */
+    .arch { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 16px 0; }
+    .arch-box {
+      border-radius: 10px; padding: 14px 18px; text-align: center;
+      font-size: 10pt; font-weight: 600; color: #fff; min-width: 140px; flex: 1;
+    }
+    .arch-arrow { display: flex; align-items: center; font-size: 20pt; color: #94a3b8; }
+    .bg-throw { background: #ef4444; }
+    .bg-sense { background: #0ea5e9; }
+    .bg-brain { background: #f59e0b; color: #1e293b; }
+    .bg-move  { background: #22c55e; }
+
+    /* ---------- math ---------- */
+    .formula {
+      background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px;
+      padding: 14px 20px; font-family: 'Cambria Math', 'Times New Roman', serif;
+      font-size: 12pt; text-align: center; margin: 12px 0;
+    }
+
+    /* ---------- phase timeline ---------- */
+    .timeline { position: relative; padding-left: 30px; margin: 14px 0; }
+    .timeline::before {
+      content: ''; position: absolute; left: 10px; top: 0; bottom: 0;
+      width: 3px; background: #0ea5e9; border-radius: 2px;
+    }
+    .tl-item { position: relative; margin-bottom: 18px; }
+    .tl-item::before {
+      content: ''; position: absolute; left: -24px; top: 5px;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #0ea5e9; border: 2px solid #fff;
+      box-shadow: 0 0 0 2px #0ea5e9;
+    }
+    .tl-item.done::before { background: #22c55e; box-shadow: 0 0 0 2px #22c55e; }
+    .tl-item.current::before { background: #f59e0b; box-shadow: 0 0 0 2px #f59e0b; }
+    .tl-item.todo::before { background: #cbd5e1; box-shadow: 0 0 0 2px #cbd5e1; }
+
+    /* ---------- code ---------- */
+    code {
+      background: #f1f5f9; padding: 2px 6px; border-radius: 4px;
+      font-family: 'Cascadia Code', 'Consolas', monospace; font-size: 9.5pt;
+    }
+    pre {
+      background: #0f172a; color: #e2e8f0; padding: 14px 18px;
+      border-radius: 8px; font-size: 9pt; overflow-x: auto;
+      font-family: 'Cascadia Code', 'Consolas', monospace;
+      line-height: 1.5; margin: 10px 0;
+    }
+    pre .comment { color: #64748b; }
+    pre .keyword { color: #38bdf8; }
+    pre .string { color: #34d399; }
+
+    .page-break { page-break-before: always; }
+    .highlight { background: #fef3c7; padding: 2px 4px; border-radius: 3px; }
+    .badge {
+      display: inline-block; padding: 2px 10px; border-radius: 12px;
+      font-size: 9pt; font-weight: 600; color: #fff;
+    }
+    .badge-done { background: #22c55e; }
+    .badge-wip  { background: #f59e0b; }
+    .badge-todo { background: #94a3b8; }
+
+    @media print {
+      .cover { min-height: 100vh; }
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== COVER PAGE ===== -->
+<div class="cover">
+  <div class="icon">🗑️</div>
+  <h1>Smart Dustbin</h1>
+  <div class="subtitle">AI-Powered Autonomous Trash-Catching Bin — Webots Simulation</div>
+  <div style="width:80px;height:3px;background:rgba(255,255,255,0.4);margin:0 auto 30px;border-radius:2px;"></div>
+  <div class="meta">
+    <strong>Project Workflow &amp; Technical Reference</strong><br>
+    College Project — Team Document<br>
+    Platform: Webots R2025a &nbsp;|&nbsp; Language: Python<br>
+    AI Stack: OpenCV + YOLOv8<br><br>
+    October 2026
+  </div>
+</div>
+
+<!-- ===== PAGE 1: OVERVIEW ===== -->
+<div class="page">
+  <h2>1 &nbsp; Project Overview</h2>
+
+  <div class="card card-blue">
+    <h4>💡 The Idea</h4>
+    <p>When someone throws trash toward an open dustbin, the bin <strong>automatically predicts where the trash will land</strong> and <strong>drives itself to catch it mid-air</strong> — so the garbage never hits the ground.</p>
+  </div>
+
+  <h3>How It Works (In Plain English)</h3>
+  <ol>
+    <li><strong>A person throws</strong> a piece of trash toward the bin.</li>
+    <li><strong>The bin's camera sees</strong> the object flying through the air.</li>
+    <li><strong>The brain fits a curve</strong> — using physics (projectile motion), it predicts exactly where the trash will land.</li>
+    <li><strong>The bin drives</strong> to that spot at top speed (like an omni-wheel robot).</li>
+    <li><strong>Catch!</strong> The trash falls neatly into the open top of the bin.</li>
+  </ol>
+
+  <h3>System Architecture</h3>
+  <div class="arch">
+    <div class="arch-box bg-throw">🤾 Throw<br><small>Person throws trash</small></div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-box bg-sense">📷 Sense<br><small>Camera + Detection</small></div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-box bg-brain">🧠 Predict<br><small>Curve fitting</small></div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-box bg-move">🏃 Move<br><small>Drive to catch spot</small></div>
+  </div>
+
+  <table>
+    <tr><th>Component</th><th>Tool / Technology</th><th>Purpose</th></tr>
+    <tr><td>Simulator</td><td>Webots R2025a</td><td>3D physics world — floor, bin, trash, gravity</td></tr>
+    <tr><td>Language</td><td>Python 3.10+</td><td>All controllers and logic</td></tr>
+    <tr><td>Vision (basic)</td><td>OpenCV</td><td>Colour-based trash detection from camera</td></tr>
+    <tr><td>Vision (AI)</td><td>YOLOv8n (Ultralytics)</td><td>Neural network object detection</td></tr>
+    <tr><td>Math</td><td>NumPy / pure math</td><td>Least-squares curve fitting, projectile prediction</td></tr>
+  </table>
+</div>
+
+<!-- ===== PAGE 2: THE PHYSICS ===== -->
+<div class="page page-break">
+  <h2>2 &nbsp; Core Algorithm — How Prediction Works</h2>
+
+  <h3>Step 1: Observe the Flying Object</h3>
+  <p>The camera captures the trash position every 16 ms. Each reading has small noise (±2 cm) and a delay (50 ms). We collect at least 5 observations before predicting.</p>
+
+  <h3>Step 2: Fit a Projectile Curve</h3>
+  <p>A thrown object follows projectile motion. We separate the 3 axes:</p>
+
+  <div class="formula">
+    <strong>Horizontal:</strong>&nbsp;&nbsp; x(t) = x₀ + vₓ · t &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; y(t) = y₀ + vᵧ · t<br><br>
+    <strong>Vertical:</strong>&nbsp;&nbsp; z(t) = z₀ + v_z · t − ½ g t²
+  </div>
+
+  <p>We use <strong>least-squares line fitting</strong> on the observations. For the vertical axis, we first remove gravity (add ½gt² to each measured z), turning it into a straight line, then fit.</p>
+
+  <h3>Step 3: Predict the Landing Point</h3>
+  <p>We solve for the time <em>t_hit</em> when the trash falls back to the rim height (0.6 m):</p>
+
+  <div class="formula">
+    z₀ + v_z · t − ½ g t² = rim_height<br><br>
+    t_hit = (v_z + √(v_z² − 2g · (rim_height − z₀))) / g
+  </div>
+
+  <p>Then the landing spot is simply: <code>(x₀ + vₓ · t_hit, &nbsp; y₀ + vᵧ · t_hit)</code></p>
+
+  <h3>Step 4: Drive the Bin There</h3>
+  <p>The bin moves with acceleration and speed limits (like a real robot with motors):</p>
+
+  <div class="card card-green">
+    <h4>Motion Parameters</h4>
+    <table>
+      <tr><th>Parameter</th><th>Value</th><th>Meaning</th></tr>
+      <tr><td>V_MAX</td><td>3.0 m/s</td><td>Maximum bin speed</td></tr>
+      <tr><td>A_MAX</td><td>5.0 m/s²</td><td>Maximum acceleration</td></tr>
+      <tr><td>NOISE</td><td>0.02 m</td><td>Camera measurement noise (±2 cm)</td></tr>
+      <tr><td>LATENCY</td><td>0.05 s</td><td>Detection processing delay</td></tr>
+    </table>
+  </div>
+
+  <p>The mover slows down near the target using: <code>speed = min(V_MAX, √(2 · A_MAX · distance))</code></p>
+</div>
+
+<!-- ===== PAGE 3: FILES ===== -->
+<div class="page page-break">
+  <h2>3 &nbsp; Project File Structure</h2>
+
+  <pre>
+smart_bin/
+├── worlds/
+│   └── smart_bin.wbt          <span class="comment"># Webots world: floor, bin, trash, thrower</span>
+├── controllers/
+│   ├── bin_controller/
+│   │   └── bin_controller.py  <span class="comment"># 🧠 The bin's brain (predict + move)</span>
+│   └── thrower/
+│       └── thrower.py         <span class="comment"># 🤾 Throw machine (spawns trash, logs results)</span>
+├── results/
+│   ├── throws_baseline.csv    <span class="comment"># Results: bin stays still (control group)</span>
+│   └── throws_predict.csv     <span class="comment"># Results: bin uses prediction (experiment)</span>
+└── (future)
+    ├── datasets/              <span class="comment"># YOLO training images + labels</span>
+    └── models/                <span class="comment"># Trained YOLOv8 weights</span>
+  </pre>
+
+  <h3>What Each File Does</h3>
+
+  <div class="card card-blue">
+    <h4>smart_bin.wbt — The World</h4>
+    <p>Defines the 3D environment: an 8×8 m arena floor, the bin (a blue open-top box made of 4 walls + a base, 0.56 m wide, 0.6 m tall), and a red trash ball (sphere, r=5 cm). Also contains a invisible "thrower" robot that acts as the supervisor.</p>
+  </div>
+
+  <div class="card card-green">
+    <h4>bin_controller.py — The Brain</h4>
+    <p>Runs every 16 ms. Reads the trash position → adds noise + delay → fits the projectile curve → predicts landing point → drives the bin there using speed/acceleration-limited velocity commands. Has a <code>USE_BRAIN</code> switch: <code>True</code> = predict &amp; catch, <code>False</code> = stay still (baseline).</p>
+  </div>
+
+  <div class="card card-amber">
+    <h4>thrower.py — The Throw Machine</h4>
+    <p>A supervisor controller that automates experiments. It spawns the trash at a "person's hand" position (−3, 0, 1.4 m), gives it a random velocity aimed to land 0–2 m from the bin, then checks if the bin caught it. Logs every throw to a CSV file. Runs 50 throws per session.</p>
+  </div>
+
+  <div class="card card-red">
+    <h4>CSV Result Files</h4>
+    <p>Each row = one throw. Columns: throw number, offset distance, intended landing point, bin position, how far the bin moved, whether it caught the trash (rim rule + physical check). Used to compute catch rates and generate graphs.</p>
+  </div>
+</div>
+
+<!-- ===== PAGE 4-5: WORKFLOW ===== -->
+<div class="page page-break">
+  <h2>4 &nbsp; Project Workflow — Phase by Phase</h2>
+
+  <p>The project has <strong>8 phases</strong> across <strong>14 working days</strong> (2 weeks). Each phase builds on the previous one.</p>
+
+  <div class="timeline">
+    <div class="tl-item done">
+      <h3 style="margin-top:0;">Phase 0 — Setup &amp; 2D Simulation <span class="badge badge-done">DONE</span></h3>
+      <p><strong>Days:</strong> 1 &nbsp;|&nbsp; <strong>Owner:</strong> All members</p>
+      <p><strong>What:</strong> Install Webots, Python, OpenCV, Ultralytics. Run the pure-Python simulation (<code>catch_sim.py</code>) that proves the prediction algorithm works in 2D. Vary parameters (acceleration, noise, latency) and save 3 comparison graphs.</p>
+      <p><strong>Deliverable:</strong> Catch-rate printout and saved plot (<code>demo_throw.png</code>).</p>
+    </div>
+
+    <div class="tl-item done">
+      <h3 style="margin-top:0;">Phase 1 — Webots World + Bin <span class="badge badge-done">DONE</span></h3>
+      <p><strong>Days:</strong> 2–3 &nbsp;|&nbsp; <strong>Owner:</strong> ___________</p>
+      <p><strong>What:</strong> Create the Webots world file. Build the bin from a base plate + 4 wall boxes (open top). Add a Physics node so it responds to gravity and collisions. Write a Python controller that moves the bin by setting its velocity (acts like an ideal omni-directional robot).</p>
+      <p><strong>Deliverable:</strong> Bin that moves in any direction from code.</p>
+    </div>
+
+    <div class="tl-item done">
+      <h3 style="margin-top:0;">Phase 2 — Throw Machine <span class="badge badge-done">DONE</span></h3>
+      <p><strong>Days:</strong> 4 &nbsp;|&nbsp; <strong>Owner:</strong> ___________</p>
+      <p><strong>What:</strong> Create a second Robot node (supervisor) that spawns trash at a "hand" position, gives it a random velocity toward the bin, and logs results. It runs 50 automated throws and saves the outcome (caught or missed) to a CSV file. The bin stays still to establish a baseline catch rate.</p>
+      <p><strong>Deliverable:</strong> 50 throws logged in <code>throws_baseline.csv</code> (~12% catch rate from luck).</p>
+    </div>
+
+    <div class="tl-item current">
+      <h3 style="margin-top:0;">Phase 3 — Predict + Catch <span class="badge badge-wip">IN PROGRESS</span></h3>
+      <p><strong>Days:</strong> 5–6 &nbsp;|&nbsp; <strong>Owner:</strong> ___________</p>
+      <p><strong>What:</strong> Port the <code>predict()</code> and <code>next_velocity()</code> functions from Phase 0 into the Webots bin controller. Feed it the true trash position plus noise and delay. The bin should visibly drive to catch the trash in 3D. Run 100+ automated throws and save results.</p>
+      <p><strong>Key technical detail:</strong> Track the commanded velocity <em>internally</em> — do NOT read back the physics velocity (floor friction corrupts it).</p>
+      <p><strong>Deliverable:</strong> Catch rate 50–70%, CSV saved, comparison graph vs baseline.</p>
+    </div>
+
+    <div class="tl-item todo">
+      <h3 style="margin-top:0;">Phase 4 — Camera + Colour Detection <span class="badge badge-todo">TODO</span></h3>
+      <p><strong>Days:</strong> 8–9 &nbsp;|&nbsp; <strong>Owner:</strong> ___________</p>
+      <p><strong>What:</strong> Add a Camera and RangeFinder sensor to the bin in the world file. Use OpenCV to detect the red trash ball by colour (HSV thresholding). Convert the pixel coordinates + depth reading into a 3D world position using pinhole camera math. Feed this camera-derived position into the predictor <em>instead of</em> the true position.</p>
+      <p><strong>Pinhole projection formula:</strong></p>
+      <div class="formula" style="font-size:11pt;">
+        world_x = (pixel_x − cx) · depth / fx &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; world_y = (pixel_y − cy) · depth / fy
+      </div>
+      <p><strong>Deliverable:</strong> Position-error graph (camera vs true), catch rate with camera data only.</p>
+    </div>
+
+    <div class="tl-item todo">
+      <h3 style="margin-top:0;">Phase 5 — YOLO Object Detection <span class="badge badge-todo">TODO</span></h3>
+      <p><strong>Days:</strong> 10–11 &nbsp;|&nbsp; <strong>Owner:</strong> ___________</p>
+      <p><strong>What:</strong> Build a dataset of 500–1000 camera frames from random throws. Auto-generate bounding-box labels from the known trash position. Train YOLOv8n on your laptop GPU. Plug the trained model into the controller. Compare detection accuracy and catch rate vs colour-based detection.</p>
+      <p><strong>Deliverable:</strong> Comparison table — Colour vs YOLO (accuracy, speed, catch rate).</p>
+    </div>
+
+    <div class="tl-item todo">
+      <h3 style="margin-top:0;">Phase 6 — Extra Feature <span class="badge badge-todo">TODO</span></h3>
+      <p><strong>Days:</strong> 12 &nbsp;|&nbsp; <strong>Owner:</strong> ___________</p>
+      <p><strong>What:</strong> Add one advanced feature. <strong>Best choice: 3 competing bins.</strong> When trash is thrown, the bin that can reach the landing point fastest claims it and moves to catch. Other options: battery + charging dock, or trash sorting.</p>
+      <p><strong>Deliverable:</strong> Extra feature working in the demo.</p>
+    </div>
+
+    <div class="tl-item todo">
+      <h3 style="margin-top:0;">Phase 7 — Results &amp; Report <span class="badge badge-todo">TODO</span></h3>
+      <p><strong>Days:</strong> 13–14 &nbsp;|&nbsp; <strong>Owner:</strong> All members</p>
+      <p><strong>What:</strong> Run final experiments (catch rate vs distance, noise, delay, acceleration). Make all graphs, system block diagram, demo video. Write the report. Prepare for viva.</p>
+      <p><strong>Deliverable:</strong> Report PDF + demo video.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE 6: DAY-BY-DAY ===== -->
+<div class="page page-break">
+  <h2>5 &nbsp; Day-by-Day Plan</h2>
+
+  <h3>Week 1</h3>
+  <table>
+    <tr><th>Day</th><th>Task</th><th>Deliverable</th><th>Status</th></tr>
+    <tr><td>1</td><td>Install tools. Run <code>catch_sim.py</code>. Save 3 parameter-sweep graphs.</td><td>Setup working, 3 graphs</td><td><span class="badge badge-done">Done</span></td></tr>
+    <tr><td>2</td><td>Webots tutorials. Build floor + simple box robot.</td><td>Robot moving in 3D</td><td><span class="badge badge-done">Done</span></td></tr>
+    <tr><td>3</td><td>Build the bin (base + 4 walls). Move it via velocity.</td><td>Bin moves in any direction</td><td><span class="badge badge-done">Done</span></td></tr>
+    <tr><td>4</td><td>Write the throw machine. 50 throws logged, bin stays still.</td><td>Baseline CSV (50 throws)</td><td><span class="badge badge-done">Done</span></td></tr>
+    <tr><td>5</td><td>Port predict() + mover into Webots. Debug bin movement.</td><td>Bin catches trash in 3D</td><td><span class="badge badge-wip">WIP</span></td></tr>
+    <tr><td>6</td><td>Run 100+ throws in fast mode. Save CSV. Make comparison graphs.</td><td>Catch-rate vs distance graph</td><td><span class="badge badge-todo">Todo</span></td></tr>
+    <tr><td>7</td><td>Buffer day. Fix bugs, record demo video, write notes.</td><td>Week-1 demo video</td><td><span class="badge badge-todo">Todo</span></td></tr>
+  </table>
+
+  <h3>Week 2</h3>
+  <table>
+    <tr><th>Day</th><th>Task</th><th>Deliverable</th><th>Status</th></tr>
+    <tr><td>8</td><td>Add Camera + RangeFinder. Pinhole camera math. Position error graph.</td><td>3D position from camera pixels</td><td><span class="badge badge-todo">Todo</span></td></tr>
+    <tr><td>9</td><td>OpenCV colour detection → predictor → catch with camera only.</td><td>Catch rate with real camera</td><td><span class="badge badge-todo">Todo</span></td></tr>
+    <tr><td>10</td><td>Save 500–1000 frames. Auto-label. Build YOLO dataset.</td><td>images/, labels/, data.yaml</td><td><span class="badge badge-todo">Todo</span></td></tr>
+    <tr><td>11</td><td>Train YOLOv8n. Plug into controller. Compare with colour detection.</td><td>Colour vs YOLO table</td><td><span class="badge badge-todo">Todo</span></td></tr>
+    <tr><td>12</td><td>Build extra feature (3 competing bins).</td><td>Extra feature demo</td><td><span class="badge badge-todo">Todo</span></td></tr>
+    <tr><td>13</td><td>Final experiments. All graphs. Failure case analysis.</td><td>All final data</td><td><span class="badge badge-todo">Todo</span></td></tr>
+    <tr><td>14</td><td>Write report. Record final demo video. Prepare for viva.</td><td>Report + video</td><td><span class="badge badge-todo">Todo</span></td></tr>
+  </table>
+</div>
+
+<!-- ===== PAGE 7: EXPERIMENTS ===== -->
+<div class="page page-break">
+  <h2>6 &nbsp; Experiments to Run</h2>
+
+  <p>These experiments prove the system works and measure its limits. Each produces data for a graph in the final report.</p>
+
+  <table>
+    <tr><th>#</th><th>Experiment</th><th>What to Vary</th><th>Expected Graph</th></tr>
+    <tr><td>1</td><td>Catch rate vs offset distance</td><td>Bin-to-landing distance: 0–2 m in 0.25 m bins</td><td>Bar chart: catch % drops with distance</td></tr>
+    <tr><td>2</td><td>Catch rate vs camera noise</td><td>Noise: 0, 0.02, 0.05, 0.10 m</td><td>Line chart: catch % drops with noise</td></tr>
+    <tr><td>3</td><td>Catch rate vs detection delay</td><td>Latency: 0, 0.05, 0.10, 0.20 s</td><td>Line chart: catch % drops with delay</td></tr>
+    <tr><td>4</td><td>Catch rate vs bin acceleration</td><td>A_MAX: 3, 5, 8, 12 m/s²</td><td>Line chart: catch % rises with acceleration</td></tr>
+    <tr><td>5</td><td>Colour detection vs YOLO</td><td>Same throws, different detection method</td><td>Comparison table + bar chart</td></tr>
+    <tr><td>6</td><td>Baseline vs prediction</td><td>USE_BRAIN: True / False</td><td>Side-by-side bar chart</td></tr>
+  </table>
+
+  <h3>How to Run an Experiment</h3>
+  <ol>
+    <li>Change the parameter in <code>bin_controller.py</code> (e.g., set <code>NOISE = 0.05</code>).</li>
+    <li>Change <code>OUT_NAME</code> in <code>thrower.py</code> to a descriptive filename.</li>
+    <li>Run the Webots simulation. Wait for 50 throws to complete.</li>
+    <li>Open the CSV in Python/Excel and compute the catch rate.</li>
+    <li>Repeat for each parameter value.</li>
+  </ol>
+
+  <h2>7 &nbsp; Key Technical Lessons</h2>
+
+  <div class="card card-red">
+    <h4>⚠️ Don't Read Physics Velocity for Control</h4>
+    <p>In Webots, <code>node.getVelocity()</code> returns the velocity <em>after</em> the physics engine applies friction, gravity, and collisions. If you use this as "current velocity" in your acceleration limiter, floor friction will zero it out every step, and the bin can never accelerate. <strong>Track your commanded velocity internally</strong> in a Python variable.</p>
+  </div>
+
+  <div class="card card-blue">
+    <h4>💡 The Two-Step Launch</h4>
+    <p>To spawn a moving object in Webots: Step 1 — set translation + <code>resetPhysics()</code>. Step 2 (next timestep) — call <code>setVelocity()</code>. If you do both in the same step, <code>resetPhysics</code> zeroes the velocity you just set.</p>
+  </div>
+
+  <div class="card card-green">
+    <h4>💡 Removing Gravity for Line Fitting</h4>
+    <p>The z-axis follows a parabola, not a line. Trick: add ½gt² to each observed z value. This cancels gravity, turning the curve into a straight line. Now standard linear regression works for all 3 axes.</p>
+  </div>
+
+  <div class="card card-amber">
+    <h4>💡 Saving Webots Worlds</h4>
+    <p>If you save the world while the simulation is running, Webots saves the <em>current</em> positions and velocities — not the original values. Always reset the simulation (<code>Ctrl+Shift+T</code>) before saving, or have your controller reset positions on startup.</p>
+  </div>
+</div>
+
+<!-- ===== PAGE 8: FOR REFERENCE ===== -->
+<div class="page page-break">
+  <h2>8 &nbsp; Quick Reference for Team Members</h2>
+
+  <h3>How to Run the Project</h3>
+  <ol>
+    <li>Open <strong>Webots</strong>.</li>
+    <li>File → Open World → navigate to <code>smart_bin/worlds/smart_bin.wbt</code>.</li>
+    <li>Click the <strong>Play</strong> button (▶) to start the simulation.</li>
+    <li>Watch the console for throw results.</li>
+    <li>Results are saved automatically to <code>smart_bin/results/</code>.</li>
+  </ol>
+
+  <h3>How to Switch Between Baseline and Predict</h3>
+  <table>
+    <tr><th>Setting</th><th>Baseline Run</th><th>Predict Run</th></tr>
+    <tr><td><code>USE_BRAIN</code> in bin_controller.py</td><td><code>False</code></td><td><code>True</code></td></tr>
+    <tr><td><code>OUT_NAME</code> in thrower.py</td><td><code>"throws_baseline.csv"</code></td><td><code>"throws_predict.csv"</code></td></tr>
+  </table>
+
+  <h3>Important Parameters to Know</h3>
+  <table>
+    <tr><th>Parameter</th><th>File</th><th>Default</th><th>What It Controls</th></tr>
+    <tr><td><code>USE_BRAIN</code></td><td>bin_controller.py</td><td>True</td><td>Prediction on/off</td></tr>
+    <tr><td><code>A_MAX</code></td><td>bin_controller.py</td><td>5.0</td><td>How fast the bin accelerates</td></tr>
+    <tr><td><code>V_MAX</code></td><td>bin_controller.py</td><td>3.0</td><td>Top speed of the bin</td></tr>
+    <tr><td><code>NOISE</code></td><td>bin_controller.py</td><td>0.02</td><td>Camera measurement noise (metres)</td></tr>
+    <tr><td><code>LATENCY</code></td><td>bin_controller.py</td><td>0.05</td><td>Detection delay (seconds)</td></tr>
+    <tr><td><code>N_THROWS</code></td><td>thrower.py</td><td>50</td><td>How many throws per run</td></tr>
+    <tr><td><code>MAX_OFFSET</code></td><td>thrower.py</td><td>2.0</td><td>Max distance trash lands from bin</td></tr>
+  </table>
+
+  <h3>Tools Required</h3>
+  <table>
+    <tr><th>Software</th><th>Version</th><th>Install Command / Link</th></tr>
+    <tr><td>Webots</td><td>R2025a</td><td><a href="https://cyberbotics.com">cyberbotics.com</a></td></tr>
+    <tr><td>Python</td><td>3.10+</td><td><a href="https://python.org">python.org</a></td></tr>
+    <tr><td>OpenCV</td><td>4.x</td><td><code>pip install opencv-python</code></td></tr>
+    <tr><td>Ultralytics</td><td>latest</td><td><code>pip install ultralytics</code></td></tr>
+    <tr><td>NumPy</td><td>1.x / 2.x</td><td><code>pip install numpy</code></td></tr>
+    <tr><td>Matplotlib</td><td>3.x</td><td><code>pip install matplotlib</code></td></tr>
+  </table>
+
+  <div style="text-align:center; margin-top:40px; padding:20px; color:#64748b; font-size:10pt;">
+    — End of Document —<br>
+    Smart Dustbin Project &nbsp;|&nbsp; Team Workflow Reference &nbsp;|&nbsp; October 2026
+  </div>
+</div>
+
+</body>
+</html>
